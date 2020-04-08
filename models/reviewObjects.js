@@ -1,37 +1,78 @@
 const db = require('../config/db');
+const {
+  getQueryValues,
+  createQueryFromObject,
+} = require('../helpers/queryHelper');
 
-const createObjectReview = async (object_owner, institution_type, worker_amount, comment, city, address, review_date, review_status) => {
-  try {
-    return await db.any(
-      'INSERT INTO fire_inspector.review_objects (object_owner, institution_type, worker_amount, comment, city, address, review_date, review_status) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)',
-      [object_owner, institution_type, worker_amount, comment, city, address, review_date, review_status],
-    );
-  } catch (error) {
-    console.log(error);
-  }
+const review_objects_table = 'fire_inspector.review_objects';
+
+const createObjectReview = async data => {
+  const {
+    object_owner,
+    institution_type,
+    worker_amount,
+    comment,
+    city,
+    address,
+    review_date,
+    review_status,
+  } = data;
+  return await db.any(
+    'INSERT ' +
+      `INTO ${review_objects_table} (object_owner, institution_type, worker_amount, comment, city, address, review_date, review_status)` +
+      ' VALUES ($1, $2, $3, $4, $5, $6, $7, $8) ' +
+      'RETURNING *',
+    [
+      object_owner,
+      institution_type,
+      worker_amount,
+      comment,
+      city,
+      address,
+      review_date,
+      review_status,
+    ],
+  );
 };
 
 const readObjectReview = async () => {
-    try {
-        const selection = await db.one('SELECT * FROM fire_inspector.review_objects');
-        console.log(selection)
-        return
-      } catch (error) {
-        console.log(error);
-      } 
-}
+  const selection = await db.any(`SELECT * FROM ${review_objects_table}`);
+  return selection;
+};
 
-class ReviewObjects {
-  constructor(object_owner, institution_type, worker_amount, comment, city, address, review_date, review_status) {
-    this.object_owner = object_owner;
-    this.institution_type = institution_type;
-    this.worker_amount = worker_amount;
-    this.comment = comment;
-    this.city = city;
-    this.address = address;
-    this.review_date = review_date;
-    this.review_status = review_status
+const updateObjectReview = async data => {
+  const { object_owner, institution_type, review_date } = data;
+  const currentObjectReview = await db.one(
+    `SELECT * FROM ${review_objects_table} WHERE object_owner=$1 AND institution_type=$2 AND review_date=$3`,
+    [object_owner, institution_type, review_date],
+  );
+  if (currentObjectReview) {
+    const updateQueryValue = await getQueryValues(currentObjectReview, data);
+    if (updateQueryValue.length > 0) {
+      const responce = await db.any(
+        `UPDATE ${review_objects_table} SET ${updateQueryValue} WHERE object_owner=$1 AND institution_type=$2 AND review_date=$3 RETURNING *`,
+        [object_owner, institution_type, review_date],
+      );
+      return responce;
+    }
   }
-}
+};
 
-module.exports = { createObjectReview, readObjectReview  };
+const deleteObjectReview = async data => {
+  const { object_owner, institution_type, review_date } = data;
+  const deleteQueryValues = await createQueryFromObject(
+    { object_owner, institution_type, review_date },
+    ' AND ',
+  );
+  const responce = db.one(
+    `DELETE FROM fire_inspector.review_objects WHERE ${deleteQueryValues} RETURNING *`,
+  );
+  return responce;
+};
+
+module.exports = {
+  createObjectReview,
+  readObjectReview,
+  updateObjectReview,
+  deleteObjectReview,
+};
