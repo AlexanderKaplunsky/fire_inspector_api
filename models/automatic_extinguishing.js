@@ -7,28 +7,20 @@ const {
 const automatic_extinguishing_table = 'fire_inspector.automatic_extinguishing';
 
 const createAutomaticExtinguishing = async data => {
-  const {
-    extinguishing_type,
-    certification_authority,
-    area,
-    installer,
-  } = data;
+  const { extinguishing_type, certification_authority, area, installer } = data;
   return await db.any(
     'INSERT ' +
-    `INTO ${automatic_extinguishing_table} (extinguishing_type, certification_authority, area, installer) ` +
-    ' VALUES ($1, $2, $3, $4, $5, $6, $7, $8) ' +
-    'RETURNING *',
-    [
-      extinguishing_type,
-      certification_authority,
-      area,
-      installer,
-    ],
+      `INTO ${automatic_extinguishing_table} (extinguishing_type, certification_authority, area, installer) ` +
+      ' VALUES ($1, $2, $3, $4) ' +
+      'RETURNING *',
+    [extinguishing_type, certification_authority, area, installer],
   );
 };
 
 const readAutomaticExtinguishing = async () => {
-  const selection = await db.any(`SELECT * FROM ${automatic_extinguishing_table}`);
+  const selection = await db.any(
+    `SELECT * FROM ${automatic_extinguishing_table}`,
+  );
   return selection;
 };
 

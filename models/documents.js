@@ -16,7 +16,7 @@ const createDocuments = async data => {
   return await db.any(
     'INSERT ' +
       `INTO ${documents_table} (document_parties_names, document_creating_date, document_type, document_validity) ` +
-      ' VALUES ($1, $2, $3, $4, $5, $6, $7, $8) ' +
+      ' VALUES ($1, $2, $3, $4) ' +
       'RETURNING *',
     [
       document_parties_names,

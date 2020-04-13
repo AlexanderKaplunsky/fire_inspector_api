@@ -17,7 +17,7 @@ const createExtinguishers = async data => {
   return await db.any(
     'INSERT ' +
       `INTO ${extinguishers_table} (batch_number, producing_country, production_year, filling_type, bulk) ` +
-      ' VALUES ($1, $2, $3, $4, $5, $6, $7, $8) ' +
+      ' VALUES ($1, $2, $3, $4, $5) ' +
       'RETURNING *',
     [batch_number, producing_country, production_year, filling_type, bulk],
   );

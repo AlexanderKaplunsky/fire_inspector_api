@@ -16,7 +16,7 @@ const createPersonal = async data => {
   return await db.any(
     'INSERT ' +
     `INTO ${personal_table} (employee_name, fire_fighting_familiarity, first_aid_level, work_experience) ` +
-    ' VALUES ($1, $2, $3, $4, $5, $6, $7, $8) ' +
+    ' VALUES ($1, $2, $3, $4) ' +
     'RETURNING *',
     [
       employee_name,

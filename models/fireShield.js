@@ -17,7 +17,7 @@ const createFireShield = async data => {
   return await db.any(
     'INSERT ' +
     `INTO ${fire_shield_table} (buckets_number, shield_verification_date, instruments_amount, extinguishing_material_volume, shield_class) ` +
-    ' VALUES ($1, $2, $3, $4, $5, $6, $7, $8) ' +
+    ' VALUES ($1, $2, $3, $4, $5) ' +
     'RETURNING *',
     [
       buckets_number,

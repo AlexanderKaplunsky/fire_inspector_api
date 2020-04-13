@@ -18,7 +18,7 @@ const createIncidents = async data => {
   return await db.any(
     'INSERT ' +
       `INTO ${incidents_table} (incident_address, incident_date, building_damage_percentage, losses, reason, victims_number) ` +
-      ' VALUES ($1, $2, $3, $4, $5, $6, $7, $8) ' +
+      ' VALUES ($1, $2, $3, $4, $5, $6) ' +
       'RETURNING *',
     [
       incident_address,
