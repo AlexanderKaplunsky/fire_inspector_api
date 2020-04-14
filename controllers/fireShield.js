@@ -33,12 +33,12 @@ router.post(`${BASE}/fire_shield/`, async (req, res) => {
   res.send(objectReviewData);
 });
 
-router.get(`${BASE}/incidents/`, async (req, res) => {
+router.get(`${BASE}/fire_shield/`, async (req, res) => {
   const objectReviewData = await readFireShield();
   res.send(objectReviewData).status(200);
 });
 
-router.put(`${BASE}/incidents/`, async (req, res) => {
+router.put(`${BASE}/fire_shield/`, async (req, res) => {
   const {
     buckets_number,
     shield_verification_date,
@@ -56,7 +56,7 @@ router.put(`${BASE}/incidents/`, async (req, res) => {
   res.send(objectReviewData).status(200);
 });
 
-router.delete(`${BASE}/incidents/`, async (req, res) => {
+router.delete(`${BASE}/fire_shield/`, async (req, res) => {
   const objectReviewData = await deleteFireShield(req.body);
   res.send(objectReviewData).status(200);
 });
