@@ -1,8 +1,5 @@
 const db = require('../config/db');
-const {
-  getQueryValues,
-  createQueryFromObject,
-} = require('../helpers/queryHelper');
+const { createQueryFromObject } = require('../helpers/queryHelper');
 
 const extinguishers_table = 'fire_inspector.extinguishers';
 
@@ -29,21 +26,19 @@ const readExtinguishers = async () => {
 };
 
 const updateExtinguishers = async data => {
-  const { batch_number, filling_type } = data;
-  const currentObjectReview = await db.one(
-    `SELECT * FROM ${extinguishers_table} WHERE batch_number=$1 AND filling_type=$2 AND review_date=$3`,
-    [batch_number, filling_type],
+  const {
+    producing_country,
+    production_year,
+    bulk,
+    batch_number,
+    filling_type,
+  } = data;
+  const responce = await db.any(
+    `UPDATE ${extinguishers_table}
+         SET producing_country=$1,production_year=$2,bulk=$3 WHERE batch_number=$4 AND filling_type=$5 RETURNING *`,
+    [producing_country, production_year, bulk, batch_number, filling_type],
   );
-  if (currentObjectReview) {
-    const updateQueryValue = await getQueryValues(currentObjectReview, data);
-    if (updateQueryValue.length > 0) {
-      const responce = await db.any(
-        `UPDATE ${extinguishers_table} SET ${updateQueryValue} WHERE batch_number=$1 AND filling_type=$2 RETURNING *`,
-        [batch_number, filling_type],
-      );
-      return responce;
-    }
-  }
+  return responce;
 };
 
 const deleteExtinguishers = async data => {

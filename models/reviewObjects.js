@@ -1,8 +1,6 @@
 const db = require('../config/db');
-const {
-  getQueryValues,
-  createQueryFromObject,
-} = require('../helpers/queryHelper');
+const { createQueryFromObject } = require('../helpers/queryHelper');
+const moment = require('moment');
 
 const review_objects_table = 'fire_inspector.review_objects';
 
@@ -41,30 +39,46 @@ const readObjectReview = async () => {
 };
 
 const updateObjectReview = async data => {
-  const { object_owner, institution_type, review_date } = data;
-  const currentObjectReview = await db.one(
-    `SELECT * FROM ${review_objects_table} WHERE object_owner=$1 AND institution_type=$2 AND review_date=$3`,
-    [object_owner, institution_type, review_date],
+  const {
+    worker_amount,
+    comment,
+    city,
+    address,
+    review_status,
+    object_owner,
+    institution_type,
+    review_date,
+  } = data;
+  console.log(data);
+  const formatted_review_date = moment(review_date).format('YYYY-MM-DD');
+  const responce = await db.any(
+    `UPDATE ${review_objects_table}
+         SET worker_amount=$1,comment=$2,city=$3,address=$4,review_status=$5 WHERE object_owner=$6 AND institution_type=$7 AND review_date=$8 RETURNING *`,
+    [
+      worker_amount,
+      comment,
+      city,
+      address,
+      review_status,
+      object_owner,
+      institution_type,
+      formatted_review_date,
+    ],
   );
-  if (currentObjectReview) {
-    const updateQueryValue = await getQueryValues(currentObjectReview, data);
-    if (updateQueryValue.length > 0) {
-      const responce = await db.any(
-        `UPDATE ${review_objects_table} SET ${updateQueryValue} WHERE object_owner=$1 AND institution_type=$2 AND review_date=$3 RETURNING *`,
-        [object_owner, institution_type, review_date],
-      );
-      return responce;
-    }
-  }
+  return responce;
 };
 
 const deleteObjectReview = async data => {
   const { object_owner, institution_type, review_date } = data;
   const deleteQueryValues = await createQueryFromObject(
-    { object_owner, institution_type, review_date },
+    {
+      object_owner,
+      institution_type,
+      review_date: moment(review_date).format('YYYY-MM-DD'),
+    },
     ' AND ',
   );
-  const responce = db.one(
+  const responce = db.any(
     `DELETE FROM fire_inspector.review_objects WHERE ${deleteQueryValues} RETURNING *`,
   );
   return responce;

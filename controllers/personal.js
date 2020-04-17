@@ -15,20 +15,20 @@ router.use(function timeLog(req, res, next) {
 });
 
 router.post(`${BASE}/personal/`, async (req, res) => {
-  console.log(req.body);
   const {
     employee_name,
     fire_fighting_familiarity,
     first_aid_level,
     work_experience,
   } = req.body;
-  const objectReviewData = await createPersonal({
+  await createPersonal({
     employee_name,
     fire_fighting_familiarity,
     first_aid_level,
     work_experience,
   });
-  res.send(objectReviewData);
+  const updatedData = await readPersonal();
+  res.send(updatedData).status(200);
 });
 
 router.get(`${BASE}/personal/`, async (req, res) => {
@@ -43,18 +43,20 @@ router.put(`${BASE}/personal/`, async (req, res) => {
     first_aid_level,
     work_experience,
   } = req.body;
-  const objectReviewData = await updatePersonal({
+  await updatePersonal({
     employee_name,
     fire_fighting_familiarity,
     first_aid_level,
     work_experience,
   });
-  res.send(objectReviewData).status(200);
+  const updatedData = await readPersonal();
+  res.send(updatedData).status(200);
 });
 
-router.delete(`${BASE}/personal/`, async (req, res) => {
-  const objectReviewData = await deletePersonal(req.body);
-  res.send(objectReviewData).status(200);
+router.post(`${BASE}/delete_personal/`, async (req, res) => {
+  await deletePersonal(req.body);
+  const updatedData = await readPersonal();
+  res.send(updatedData).status(200);
 });
 
 module.exports = router;

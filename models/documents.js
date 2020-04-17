@@ -1,8 +1,7 @@
 const db = require('../config/db');
-const {
-  getQueryValues,
-  createQueryFromObject,
-} = require('../helpers/queryHelper');
+const { createQueryFromObject } = require('../helpers/queryHelper');
+
+const moment = require('moment');
 
 const documents_table = 'fire_inspector.documents';
 
@@ -13,6 +12,9 @@ const createDocuments = async data => {
     document_type,
     document_validity,
   } = data;
+  const formatted_document_creating_date = moment(
+    document_creating_date,
+  ).format('YYYY-MM-DD');
   return await db.any(
     'INSERT ' +
       `INTO ${documents_table} (document_parties_names, document_creating_date, document_type, document_validity) ` +
@@ -20,7 +22,7 @@ const createDocuments = async data => {
       'RETURNING *',
     [
       document_parties_names,
-      document_creating_date,
+      formatted_document_creating_date,
       document_type,
       document_validity,
     ],
@@ -33,21 +35,26 @@ const readDocuments = async () => {
 };
 
 const updateDocuments = async data => {
-  const { document_parties_names, document_type } = data;
-  const currentObjectReview = await db.one(
-    `SELECT * FROM ${documents_table} WHERE document_parties_names=$1 AND document_type=$2`,
-    [document_parties_names, document_type],
+  const {
+    document_creating_date,
+    document_validity,
+    document_parties_names,
+    document_type,
+  } = data;
+  const formatted_document_creating_date = moment(
+    document_creating_date,
+  ).format('YYYY-MM-DD');
+  const responce = await db.any(
+    `UPDATE ${documents_table}
+         SET document_creating_date=$1,document_validity=$2 WHERE document_parties_names=$3 AND document_type=$4 RETURNING *`,
+    [
+      formatted_document_creating_date,
+      document_validity,
+      document_parties_names,
+      document_type,
+    ],
   );
-  if (currentObjectReview) {
-    const updateQueryValue = await getQueryValues(currentObjectReview, data);
-    if (updateQueryValue.length > 0) {
-      const responce = await db.any(
-        `UPDATE ${documents_table} SET ${updateQueryValue} WHERE document_parties_names=$1 AND document_type=$2 RETURNING *`,
-        [document_parties_names, document_type],
-      );
-      return responce;
-    }
-  }
+  return responce;
 };
 
 const deleteDocuments = async data => {

@@ -1,8 +1,5 @@
 const db = require('../config/db');
-const {
-  getQueryValues,
-  createQueryFromObject,
-} = require('../helpers/queryHelper');
+const { createQueryFromObject } = require('../helpers/queryHelper');
 
 const personal_table = 'fire_inspector.personal';
 
@@ -15,9 +12,9 @@ const createPersonal = async data => {
   } = data;
   return await db.any(
     'INSERT ' +
-    `INTO ${personal_table} (employee_name, fire_fighting_familiarity, first_aid_level, work_experience) ` +
-    ' VALUES ($1, $2, $3, $4) ' +
-    'RETURNING *',
+      `INTO ${personal_table} (employee_name, fire_fighting_familiarity, first_aid_level, work_experience) ` +
+      ' VALUES ($1, $2, $3, $4) ' +
+      'RETURNING *',
     [
       employee_name,
       fire_fighting_familiarity,
@@ -33,27 +30,29 @@ const readPersonal = async () => {
 };
 
 const updatePersonal = async data => {
-  const { first_aid_level, work_experience } = data;
-  const currentObjectReview = await db.one(
-    `SELECT * FROM ${personal_table} WHERE certification_authority=$1 AND installer=$2`,
-    [first_aid_level, work_experience],
+  const {
+    employee_name,
+    fire_fighting_familiarity,
+    first_aid_level,
+    work_experience,
+  } = data;
+  const responce = await db.any(
+    `UPDATE ${personal_table}
+         SET employee_name=$1,fire_fighting_familiarity=$2 WHERE first_aid_level=$3 AND work_experience=$4 RETURNING *`,
+    [
+      employee_name,
+      fire_fighting_familiarity,
+      first_aid_level,
+      work_experience,
+    ],
   );
-  if (currentObjectReview) {
-    const updateQueryValue = await getQueryValues(currentObjectReview, data);
-    if (updateQueryValue.length > 0) {
-      const responce = await db.any(
-        `UPDATE ${personal_table} SET ${updateQueryValue} WHERE first_aid_level=$1 AND work_experience=$2 RETURNING *`,
-        [first_aid_level, work_experience],
-      );
-      return responce;
-    }
-  }
+  return responce;
 };
 
 const deletePersonal = async data => {
-  const { incident_date, reason } = data;
+  const { first_aid_level, work_experience } = data;
   const deleteQueryValues = await createQueryFromObject(
-    { incident_date, reason },
+    { first_aid_level, work_experience },
     ' AND ',
   );
   const responce = db.one(

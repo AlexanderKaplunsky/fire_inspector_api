@@ -1,7 +1,7 @@
 const express = require('express'),
   router = express.Router();
 
-const reviewObjects = require('./rewiewObjects');
+const reviewObjects = require('./reviewObjects');
 const personal = require('./personal');
 const incidents = require('./incidents');
 const fireShield = require('./fireShield');

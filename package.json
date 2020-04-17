@@ -21,6 +21,7 @@
     "express": "^4.17.1",
     "express-form-data": "^2.0.12",
     "lodash": "^4.17.15",
+    "moment": "^2.24.0",
     "nodemon": "^2.0.2",
     "pg-promise": "^10.3.5"
   },

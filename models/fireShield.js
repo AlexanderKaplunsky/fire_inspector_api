@@ -1,8 +1,6 @@
 const db = require('../config/db');
-const {
-  getQueryValues,
-  createQueryFromObject,
-} = require('../helpers/queryHelper');
+const { createQueryFromObject } = require('../helpers/queryHelper');
+const moment = require('moment');
 
 const fire_shield_table = 'fire_inspector.fire_shield';
 
@@ -14,14 +12,17 @@ const createFireShield = async data => {
     extinguishing_material_volume,
     shield_class,
   } = data;
+  const formatted_shield_verification_date = moment(
+    shield_verification_date,
+  ).format('YYYY-MM-DD');
   return await db.any(
     'INSERT ' +
-    `INTO ${fire_shield_table} (buckets_number, shield_verification_date, instruments_amount, extinguishing_material_volume, shield_class) ` +
-    ' VALUES ($1, $2, $3, $4, $5) ' +
-    'RETURNING *',
+      `INTO ${fire_shield_table} (buckets_number, shield_verification_date, instruments_amount, extinguishing_material_volume, shield_class) ` +
+      ' VALUES ($1, $2, $3, $4, $5) ' +
+      'RETURNING *',
     [
       buckets_number,
-      shield_verification_date,
+      formatted_shield_verification_date,
       instruments_amount,
       extinguishing_material_volume,
       shield_class,
@@ -35,27 +36,39 @@ const readFireShield = async () => {
 };
 
 const updateFireShield = async data => {
-  const { shield_verification_date, shield_class } = data;
-  const currentObjectReview = await db.one(
-    `SELECT * FROM ${fire_shield_table} WHERE certification_authority=$1 AND installer=$2`,
-    [shield_verification_date, shield_class],
+  const {
+    buckets_number,
+    shield_verification_date,
+    instruments_amount,
+    extinguishing_material_volume,
+    shield_class,
+  } = data;
+  const formatted_shield_verification_date = moment(
+    shield_verification_date,
+  ).format('YYYY-MM-DD');
+  const responce = await db.any(
+    `UPDATE ${fire_shield_table}
+         SET buckets_number=$1,instruments_amount=$2,extinguishing_material_volume=$3 WHERE shield_verification_date=$4 AND shield_class=$5 RETURNING *`,
+    [
+      buckets_number,
+      instruments_amount,
+      extinguishing_material_volume,
+      formatted_shield_verification_date,
+      shield_class,
+    ],
   );
-  if (currentObjectReview) {
-    const updateQueryValue = await getQueryValues(currentObjectReview, data);
-    if (updateQueryValue.length > 0) {
-      const responce = await db.any(
-        `UPDATE ${fire_shield_table} SET ${updateQueryValue} WHERE shield_verification_date=$1 AND shield_class=$2 RETURNING *`,
-        [shield_verification_date, shield_class],
-      );
-      return responce;
-    }
-  }
+  return responce;
 };
 
 const deleteFireShield = async data => {
-  const { incident_date, reason } = data;
+  const { shield_verification_date, shield_class } = data;
   const deleteQueryValues = await createQueryFromObject(
-    { incident_date, reason },
+    {
+      shield_verification_date: moment(shield_verification_date).format(
+        'YYYY-MM-DD',
+      ),
+      shield_class,
+    },
     ' AND ',
   );
   const responce = db.one(

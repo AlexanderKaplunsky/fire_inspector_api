@@ -7,7 +7,7 @@ const {
   readExtinguishers,
   updateExtinguishers,
   deleteExtinguishers,
-} = require('../models/reviewObjects');
+} = require('../models/extinguishers');
 
 router.use(function timeLog(req, res, next) {
   console.log('Time: ', Date.now());
@@ -22,19 +22,20 @@ router.post(`${BASE}/extinguishers/`, async (req, res) => {
     filling_type,
     bulk,
   } = req.body;
-  const objectReviewData = await createExtinguishers({
+  await createExtinguishers({
     batch_number,
     producing_country,
     production_year,
     filling_type,
     bulk,
   });
-  res.send(objectReviewData);
+  const updatedData = await readExtinguishers();
+  res.send(updatedData).status(200);
 });
 
 router.get(`${BASE}/extinguishers/`, async (req, res) => {
-  const objectReviewData = await readExtinguishers();
-  res.send(objectReviewData).status(200);
+  const extinguishersData = await readExtinguishers();
+  res.send(extinguishersData).status(200);
 });
 
 router.put(`${BASE}/extinguishers/`, async (req, res) => {
@@ -45,19 +46,21 @@ router.put(`${BASE}/extinguishers/`, async (req, res) => {
     filling_type,
     bulk,
   } = req.body;
-  const objectReviewData = await updateExtinguishers({
+  await updateExtinguishers({
     batch_number,
     producing_country,
     production_year,
     filling_type,
     bulk,
   });
-  res.send(objectReviewData).status(200);
+  const updatedData = await readExtinguishers();
+  res.send(updatedData).status(200);
 });
 
-router.delete(`${BASE}/extinguishers/`, async (req, res) => {
-  const objectReviewData = await deleteExtinguishers(req.body);
-  res.send(objectReviewData).status(200);
+router.post(`${BASE}/delete_extinguishers/`, async (req, res) => {
+  await deleteExtinguishers(req.body);
+  const updatedData = await readExtinguishers();
+  res.send(updatedData).status(200);
 });
 
 module.exports = router;

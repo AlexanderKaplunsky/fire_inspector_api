@@ -15,7 +15,6 @@ router.use(function timeLog(req, res, next) {
 });
 
 router.post(`${BASE}/object_review/`, async (req, res) => {
-  console.log(req.body);
   const {
     object_owner,
     institution_type,
@@ -26,7 +25,7 @@ router.post(`${BASE}/object_review/`, async (req, res) => {
     review_date,
     review_status,
   } = req.body;
-  const objectReviewData = await createObjectReview({
+  await createObjectReview({
     object_owner,
     institution_type,
     worker_amount,
@@ -36,7 +35,8 @@ router.post(`${BASE}/object_review/`, async (req, res) => {
     review_date,
     review_status,
   });
-  res.send(objectReviewData);
+  const updatedData = await readObjectReview();
+  res.send(updatedData).status(200);
 });
 
 router.get(`${BASE}/object_review/`, async (req, res) => {
@@ -55,7 +55,7 @@ router.put(`${BASE}/object_review/`, async (req, res) => {
     review_date,
     review_status,
   } = req.body;
-  const objectReviewData = await updateObjectReview({
+  await updateObjectReview({
     object_owner,
     institution_type,
     worker_amount,
@@ -65,12 +65,14 @@ router.put(`${BASE}/object_review/`, async (req, res) => {
     review_date,
     review_status,
   });
-  res.send(objectReviewData).status(200);
+  const updatedData = await readObjectReview();
+  res.send(updatedData).status(200);
 });
 
-router.delete(`${BASE}/object_review/`, async (req, res) => {
-  const objectReviewData = await deleteObjectReview(req.body);
-  res.send(objectReviewData).status(200);
+router.post(`${BASE}/delete_object_review/`, async (req, res) => {
+  await deleteObjectReview(req.body);
+  const updatedData = await readObjectReview();
+  res.send(updatedData).status(200);
 });
 
 module.exports = router;

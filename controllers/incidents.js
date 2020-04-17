@@ -24,7 +24,7 @@ router.post(`${BASE}/incidents/`, async (req, res) => {
     reason,
     victims_number,
   } = req.body;
-  const objectReviewData = await createIncidents({
+  await createIncidents({
     incident_address,
     incident_date,
     building_damage_percentage,
@@ -32,12 +32,13 @@ router.post(`${BASE}/incidents/`, async (req, res) => {
     reason,
     victims_number,
   });
-  res.send(objectReviewData);
+  const updatedData = await readIncidents();
+  res.send(updatedData).status(200);
 });
 
 router.get(`${BASE}/incidents/`, async (req, res) => {
-  const objectReviewData = await readIncidents();
-  res.send(objectReviewData).status(200);
+  const incidents = await readIncidents();
+  res.send(incidents).status(200);
 });
 
 router.put(`${BASE}/incidents/`, async (req, res) => {
@@ -49,7 +50,7 @@ router.put(`${BASE}/incidents/`, async (req, res) => {
     reason,
     victims_number,
   } = req.body;
-  const objectReviewData = await updateIncidents({
+  await updateIncidents({
     incident_address,
     incident_date,
     building_damage_percentage,
@@ -57,12 +58,14 @@ router.put(`${BASE}/incidents/`, async (req, res) => {
     reason,
     victims_number,
   });
-  res.send(objectReviewData).status(200);
+  const updatedData = await readIncidents();
+  res.send(updatedData).status(200);
 });
 
-router.delete(`${BASE}/incidents/`, async (req, res) => {
-  const objectReviewData = await deleteIncidents(req.body);
-  res.send(objectReviewData).status(200);
+router.post(`${BASE}/delete_incidents/`, async (req, res) => {
+  await deleteIncidents(req.body);
+  const updatedData = await readIncidents();
+  res.send(updatedData).status(200);
 });
 
 module.exports = router;

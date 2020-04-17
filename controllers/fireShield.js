@@ -7,7 +7,7 @@ const {
   readFireShield,
   updateFireShield,
   deleteFireShield,
-} = require('../models/incidents');
+} = require('../models/fireShield');
 
 router.use(function timeLog(req, res, next) {
   console.log('Time: ', Date.now());
@@ -23,19 +23,20 @@ router.post(`${BASE}/fire_shield/`, async (req, res) => {
     extinguishing_material_volume,
     shield_class,
   } = req.body;
-  const objectReviewData = await createFireShield({
+  await createFireShield({
     buckets_number,
     shield_verification_date,
     instruments_amount,
     extinguishing_material_volume,
     shield_class,
   });
-  res.send(objectReviewData);
+  const updatedData = await readFireShield();
+  res.send(updatedData).status(200);
 });
 
 router.get(`${BASE}/fire_shield/`, async (req, res) => {
-  const objectReviewData = await readFireShield();
-  res.send(objectReviewData).status(200);
+  const fireShieldData = await readFireShield();
+  res.send(fireShieldData).status(200);
 });
 
 router.put(`${BASE}/fire_shield/`, async (req, res) => {
@@ -46,19 +47,21 @@ router.put(`${BASE}/fire_shield/`, async (req, res) => {
     extinguishing_material_volume,
     shield_class,
   } = req.body;
-  const objectReviewData = await updateFireShield({
+  await updateFireShield({
     buckets_number,
     shield_verification_date,
     instruments_amount,
     extinguishing_material_volume,
     shield_class,
   });
-  res.send(objectReviewData).status(200);
+  const updatedData = await readFireShield();
+  res.send(updatedData).status(200);
 });
 
-router.delete(`${BASE}/fire_shield/`, async (req, res) => {
-  const objectReviewData = await deleteFireShield(req.body);
-  res.send(objectReviewData).status(200);
+router.post(`${BASE}/delete_fire_shield/`, async (req, res) => {
+  await deleteFireShield(req.body);
+  const updatedData = await readFireShield();
+  res.send(updatedData).status(200);
 });
 
 module.exports = router;

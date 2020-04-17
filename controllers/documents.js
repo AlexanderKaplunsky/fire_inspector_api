@@ -1,13 +1,12 @@
 const express = require('express'),
   router = express.Router();
-
 const { BASE } = require('../config/env');
 const {
   createDocuments,
   readDocuments,
   updateDocuments,
   deleteDocuments,
-} = require('../models/reviewObjects');
+} = require('../models/documents');
 
 router.use(function timeLog(req, res, next) {
   console.log('Time: ', Date.now());
@@ -21,18 +20,19 @@ router.post(`${BASE}/documents/`, async (req, res) => {
     document_type,
     document_validity,
   } = req.body;
-  const objectReviewData = await createDocuments({
+  await createDocuments({
     document_parties_names,
     document_creating_date,
     document_type,
     document_validity,
   });
-  res.send(objectReviewData);
+  const updatedData = await readDocuments();
+  res.send(updatedData).status(200);
 });
 
 router.get(`${BASE}/documents/`, async (req, res) => {
-  const objectReviewData = await readDocuments();
-  res.send(objectReviewData).status(200);
+  const documentsData = await readDocuments();
+  res.send(documentsData).status(200);
 });
 
 router.put(`${BASE}/documents/`, async (req, res) => {
@@ -42,18 +42,20 @@ router.put(`${BASE}/documents/`, async (req, res) => {
     document_type,
     document_validity,
   } = req.body;
-  const objectReviewData = await updateDocuments({
+  await updateDocuments({
     document_parties_names,
     document_creating_date,
     document_type,
     document_validity,
   });
-  res.send(objectReviewData).status(200);
+  const updatedData = await readDocuments();
+  res.send(updatedData).status(200);
 });
 
-router.delete(`${BASE}/documents/`, async (req, res) => {
-  const objectReviewData = await deleteDocuments(req.body);
-  res.send(objectReviewData).status(200);
+router.post(`${BASE}/delete_documents/`, async (req, res) => {
+  await deleteDocuments(req.body);
+  const updatedData = await readDocuments();
+  res.send(updatedData).status(200);
 });
 
 module.exports = router;

@@ -1,8 +1,5 @@
 const db = require('../config/db');
-const {
-  getQueryValues,
-  createQueryFromObject,
-} = require('../helpers/queryHelper');
+const { createQueryFromObject } = require('../helpers/queryHelper');
 
 const automatic_extinguishing_table = 'fire_inspector.automatic_extinguishing';
 
@@ -25,21 +22,13 @@ const readAutomaticExtinguishing = async () => {
 };
 
 const updateAutomaticExtinguishing = async data => {
-  const { certification_authority, installer } = data;
-  const currentObjectReview = await db.one(
-    `SELECT * FROM ${automatic_extinguishing_table} WHERE certification_authority=$1 AND installer=$2`,
-    [certification_authority, installer],
+  const { extinguishing_type, area, certification_authority, installer } = data;
+  const responce = await db.any(
+    `UPDATE ${automatic_extinguishing_table}
+         SET extinguishing_type=$1,area=$2 WHERE certification_authority=$3 AND installer=$4 RETURNING *`,
+    [extinguishing_type, area, certification_authority, installer],
   );
-  if (currentObjectReview) {
-    const updateQueryValue = await getQueryValues(currentObjectReview, data);
-    if (updateQueryValue.length > 0) {
-      const responce = await db.any(
-        `UPDATE ${automatic_extinguishing_table} SET ${updateQueryValue} WHERE certification_authority=$1 AND installer=$2 RETURNING *`,
-        [certification_authority, installer],
-      );
-      return responce;
-    }
-  }
+  return responce;
 };
 
 const deleteAutomaticExtinguishing = async data => {

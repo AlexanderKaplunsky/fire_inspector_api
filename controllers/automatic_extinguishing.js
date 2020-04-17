@@ -7,7 +7,7 @@ const {
   readAutomaticExtinguishing,
   updateAutomaticExtinguishing,
   deleteAutomaticExtinguishing,
-} = require('../models/reviewObjects');
+} = require('../models/automatic_extinguishing');
 
 router.use(function timeLog(req, res, next) {
   console.log('Time: ', Date.now());
@@ -21,18 +21,19 @@ router.post(`${BASE}/automatic_extinguishing/`, async (req, res) => {
     area,
     installer,
   } = req.body;
-  const objectReviewData = await createAutomaticExtinguishing({
+  await createAutomaticExtinguishing({
     extinguishing_type,
     certification_authority,
     area,
     installer,
   });
-  res.send(objectReviewData);
+  const updatedData = await readAutomaticExtinguishing();
+  res.send(updatedData).status(200);
 });
 
 router.get(`${BASE}/automatic_extinguishing/`, async (req, res) => {
-  const objectReviewData = await readAutomaticExtinguishing();
-  res.send(objectReviewData).status(200);
+  const automaticExtinguishingData = await readAutomaticExtinguishing();
+  res.send(automaticExtinguishingData).status(200);
 });
 
 router.put(`${BASE}/automatic_extinguishing/`, async (req, res) => {
@@ -42,18 +43,20 @@ router.put(`${BASE}/automatic_extinguishing/`, async (req, res) => {
     area,
     installer,
   } = req.body;
-  const objectReviewData = await updateAutomaticExtinguishing({
+  await updateAutomaticExtinguishing({
     extinguishing_type,
     certification_authority,
     area,
     installer,
   });
-  res.send(objectReviewData).status(200);
+  const updatedData = await readAutomaticExtinguishing();
+  res.send(updatedData).status(200);
 });
 
-router.delete(`${BASE}/automatic_extinguishing/`, async (req, res) => {
-  const objectReviewData = await deleteAutomaticExtinguishing(req.body);
-  res.send(objectReviewData).status(200);
+router.post(`${BASE}/delete_automatic_extinguishing/`, async (req, res) => {
+  await deleteAutomaticExtinguishing(req.body);
+  const updatedData = await readAutomaticExtinguishing();
+  res.send(updatedData).status(200);
 });
 
 module.exports = router;
