@@ -46,23 +46,23 @@ const readIncidents = async body => {
 
 const updateIncidents = async data => {
   const {
-    incident_address,
     building_damage_percentage,
     losses,
     victims_number,
     incident_date,
+    incident_address,
     reason,
   } = data;
   const formatted_incident_date = moment(incident_date).format('YYYY-MM-DD');
   const responce = await db.any(
     `UPDATE ${incidents_table}
-         SET incident_address=$1,building_damage_percentage=$2,losses=$3,victims_number=$4 WHERE incident_date=$5 AND reason=$6 RETURNING *`,
+         SET building_damage_percentage=$1,losses=$2,victims_number=$3,incident_date=$4 WHERE incident_address=$5 AND reason=$6 RETURNING *`,
     [
-      incident_address,
       building_damage_percentage,
       losses,
       victims_number,
       formatted_incident_date,
+      incident_address,
       reason,
     ],
   );
@@ -70,9 +70,9 @@ const updateIncidents = async data => {
 };
 
 const deleteIncidents = async data => {
-  const { incident_date, reason } = data;
+  const { incident_address, reason } = data;
   const deleteQueryValues = await createQueryFromObject(
-    { incident_date: moment(incident_date).format('YYYY-MM-DD'), reason },
+    { incident_address, reason },
     ' AND ',
   );
   const responce = db.one(

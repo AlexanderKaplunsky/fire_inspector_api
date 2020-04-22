@@ -57,12 +57,12 @@ const updateFireShield = async data => {
   ).format('YYYY-MM-DD');
   const responce = await db.any(
     `UPDATE ${fire_shield_table}
-         SET buckets_number=$1,instruments_amount=$2,extinguishing_material_volume=$3 WHERE shield_verification_date=$4 AND shield_class=$5 RETURNING *`,
+         SET buckets_number=$1,instruments_amount=$2,shield_verification_date=$3 WHERE extinguishing_material_volume=$4 AND shield_class=$5 RETURNING *`,
     [
       buckets_number,
       instruments_amount,
-      extinguishing_material_volume,
       formatted_shield_verification_date,
+      extinguishing_material_volume,
       shield_class,
     ],
   );
@@ -70,12 +70,10 @@ const updateFireShield = async data => {
 };
 
 const deleteFireShield = async data => {
-  const { shield_verification_date, shield_class } = data;
+  const { extinguishing_material_volume, shield_class } = data;
   const deleteQueryValues = await createQueryFromObject(
     {
-      shield_verification_date: moment(shield_verification_date).format(
-        'YYYY-MM-DD',
-      ),
+      extinguishing_material_volume,
       shield_class,
     },
     ' AND ',
