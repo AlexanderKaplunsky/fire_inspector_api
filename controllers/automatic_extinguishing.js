@@ -36,6 +36,11 @@ router.get(`${BASE}/automatic_extinguishing/`, async (req, res) => {
   res.send(automaticExtinguishingData).status(200);
 });
 
+router.post(`${BASE}/search_automatic_extinguishing/`, async (req, res) => {
+  const automaticExtinguishingData = await readAutomaticExtinguishing(req.body);
+  res.send(automaticExtinguishingData).status(200);
+});
+
 router.put(`${BASE}/automatic_extinguishing/`, async (req, res) => {
   const {
     extinguishing_type,

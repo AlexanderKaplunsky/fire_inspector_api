@@ -1,6 +1,9 @@
 const db = require('../config/db');
 const { createQueryFromObject } = require('../helpers/queryHelper');
 const moment = require('moment');
+const _ = require('lodash');
+const { convertDate } = require('../helpers/queryHelper');
+const { createSearchQuery } = require('../helpers/queryHelper');
 
 const fire_shield_table = 'fire_inspector.fire_shield';
 
@@ -30,8 +33,14 @@ const createFireShield = async data => {
   );
 };
 
-const readFireShield = async () => {
-  const selection = await db.any(`SELECT * FROM ${fire_shield_table}`);
+const readFireShield = async body => {
+  if (body) {
+    body.shield_verification_date = convertDate(body.shield_verification_date);
+  }
+  const filter = createSearchQuery(body);
+  const selection = await db.any(
+    `SELECT * FROM ${fire_shield_table} ${body && filter}`,
+  );
   return selection;
 };
 

@@ -1,6 +1,9 @@
 const db = require('../config/db');
 const { createQueryFromObject } = require('../helpers/queryHelper');
 const moment = require('moment');
+const _ = require('lodash');
+const { convertDate } = require('../helpers/queryHelper');
+const { createSearchQuery } = require('../helpers/queryHelper');
 
 const review_objects_table = 'fire_inspector.review_objects';
 
@@ -33,8 +36,14 @@ const createObjectReview = async data => {
   );
 };
 
-const readObjectReview = async () => {
-  const selection = await db.any(`SELECT * FROM ${review_objects_table}`);
+const readObjectReview = async body => {
+  if (body) {
+    body.review_date = convertDate(body.review_date);
+  }
+  const filter = createSearchQuery(body);
+  const selection = await db.any(
+    `SELECT * FROM ${review_objects_table} ${body && filter}`,
+  );
   return selection;
 };
 

@@ -36,6 +36,11 @@ router.get(`${BASE}/personal/`, async (req, res) => {
   res.send(objectReviewData).status(200);
 });
 
+router.post(`${BASE}/search_personal/`, async (req, res) => {
+  const automaticExtinguishingData = await readPersonal(req.body);
+  res.send(automaticExtinguishingData).status(200);
+});
+
 router.put(`${BASE}/personal/`, async (req, res) => {
   const {
     employee_name,

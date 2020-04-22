@@ -44,6 +44,11 @@ router.get(`${BASE}/object_review/`, async (req, res) => {
   res.send(objectReviewData).status(200);
 });
 
+router.post(`${BASE}/search_object_review/`, async (req, res) => {
+  const automaticExtinguishingData = await readObjectReview(req.body);
+  res.send(automaticExtinguishingData).status(200);
+});
+
 router.put(`${BASE}/object_review/`, async (req, res) => {
   const {
     object_owner,

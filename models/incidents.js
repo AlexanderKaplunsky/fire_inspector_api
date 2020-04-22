@@ -1,6 +1,9 @@
 const db = require('../config/db');
 const { createQueryFromObject } = require('../helpers/queryHelper');
 const moment = require('moment');
+const _ = require('lodash');
+const { convertDate } = require('../helpers/queryHelper');
+const { createSearchQuery } = require('../helpers/queryHelper');
 
 const incidents_table = 'fire_inspector.incidents';
 
@@ -30,8 +33,14 @@ const createIncidents = async data => {
   );
 };
 
-const readIncidents = async () => {
-  const selection = await db.any(`SELECT * FROM ${incidents_table}`);
+const readIncidents = async body => {
+  if (body) {
+    body.incident_date = convertDate(body.incident_date);
+  }
+  const filter = createSearchQuery(body);
+  const selection = await db.any(
+    `SELECT * FROM ${incidents_table} ${body && filter}`,
+  );
   return selection;
 };
 

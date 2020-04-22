@@ -1,5 +1,7 @@
 const db = require('../config/db');
 const { createQueryFromObject } = require('../helpers/queryHelper');
+const _ = require('lodash');
+const { createSearchQuery } = require('../helpers/queryHelper');
 
 const extinguishers_table = 'fire_inspector.extinguishers';
 
@@ -20,8 +22,11 @@ const createExtinguishers = async data => {
   );
 };
 
-const readExtinguishers = async () => {
-  const selection = await db.any(`SELECT * FROM ${extinguishers_table}`);
+const readExtinguishers = async body => {
+  const filter = createSearchQuery(body);
+  const selection = await db.any(
+    `SELECT * FROM ${extinguishers_table} ${body && filter}`,
+  );
   return selection;
 };
 

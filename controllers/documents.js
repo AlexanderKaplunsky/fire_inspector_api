@@ -35,6 +35,11 @@ router.get(`${BASE}/documents/`, async (req, res) => {
   res.send(documentsData).status(200);
 });
 
+router.post(`${BASE}/search_documents/`, async (req, res) => {
+  const automaticExtinguishingData = await readDocuments(req.body);
+  res.send(automaticExtinguishingData).status(200);
+});
+
 router.put(`${BASE}/documents/`, async (req, res) => {
   const {
     document_parties_names,

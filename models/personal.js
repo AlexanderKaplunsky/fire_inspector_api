@@ -1,5 +1,7 @@
 const db = require('../config/db');
 const { createQueryFromObject } = require('../helpers/queryHelper');
+const _ = require('lodash');
+const { createSearchQuery } = require('../helpers/queryHelper');
 
 const personal_table = 'fire_inspector.personal';
 
@@ -24,8 +26,11 @@ const createPersonal = async data => {
   );
 };
 
-const readPersonal = async () => {
-  const selection = await db.any(`SELECT * FROM ${personal_table}`);
+const readPersonal = async body => {
+  const filter = createSearchQuery(body);
+  const selection = await db.any(
+    `SELECT * FROM ${personal_table} ${body && filter}`,
+  );
   return selection;
 };
 

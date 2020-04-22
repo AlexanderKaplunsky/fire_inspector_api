@@ -41,6 +41,11 @@ router.get(`${BASE}/incidents/`, async (req, res) => {
   res.send(incidents).status(200);
 });
 
+router.post(`${BASE}/search_incidents/`, async (req, res) => {
+  const automaticExtinguishingData = await readIncidents(req.body);
+  res.send(automaticExtinguishingData).status(200);
+});
+
 router.put(`${BASE}/incidents/`, async (req, res) => {
   const {
     incident_address,

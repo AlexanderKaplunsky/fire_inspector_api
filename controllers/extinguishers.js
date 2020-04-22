@@ -38,6 +38,11 @@ router.get(`${BASE}/extinguishers/`, async (req, res) => {
   res.send(extinguishersData).status(200);
 });
 
+router.post(`${BASE}/search_extinguishers/`, async (req, res) => {
+  const automaticExtinguishingData = await readExtinguishers(req.body);
+  res.send(automaticExtinguishingData).status(200);
+});
+
 router.put(`${BASE}/extinguishers/`, async (req, res) => {
   const {
     batch_number,

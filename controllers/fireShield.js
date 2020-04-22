@@ -39,6 +39,11 @@ router.get(`${BASE}/fire_shield/`, async (req, res) => {
   res.send(fireShieldData).status(200);
 });
 
+router.post(`${BASE}/search_fire_shield/`, async (req, res) => {
+  const automaticExtinguishingData = await readFireShield(req.body);
+  res.send(automaticExtinguishingData).status(200);
+});
+
 router.put(`${BASE}/fire_shield/`, async (req, res) => {
   const {
     buckets_number,

@@ -1,4 +1,6 @@
 const db = require('../config/db');
+const _ = require('lodash');
+const { createSearchQuery } = require('../helpers/queryHelper');
 const { createQueryFromObject } = require('../helpers/queryHelper');
 
 const automatic_extinguishing_table = 'fire_inspector.automatic_extinguishing';
@@ -14,9 +16,10 @@ const createAutomaticExtinguishing = async data => {
   );
 };
 
-const readAutomaticExtinguishing = async () => {
+const readAutomaticExtinguishing = async body => {
+  const filter = createSearchQuery(body);
   const selection = await db.any(
-    `SELECT * FROM ${automatic_extinguishing_table}`,
+    `SELECT * FROM ${automatic_extinguishing_table} ${body && filter}`,
   );
   return selection;
 };
@@ -32,9 +35,9 @@ const updateAutomaticExtinguishing = async data => {
 };
 
 const deleteAutomaticExtinguishing = async data => {
-  const { incident_date, reason } = data;
+  const { certification_authority, installer } = data;
   const deleteQueryValues = await createQueryFromObject(
-    { incident_date, reason },
+    { certification_authority, installer },
     ' AND ',
   );
   const responce = db.one(
