@@ -24,6 +24,12 @@ router.post(`${BASE}/object_review/`, async (req, res) => {
     address,
     review_date,
     review_status,
+    object_name,
+    extinguishing_system,
+    build_materials,
+    build_area,
+    fire_exit_count,
+    floor_count,
   } = req.body;
   await createObjectReview({
     object_owner,
@@ -34,6 +40,12 @@ router.post(`${BASE}/object_review/`, async (req, res) => {
     address,
     review_date,
     review_status,
+    object_name,
+    extinguishing_system,
+    build_materials,
+    build_area,
+    fire_exit_count,
+    floor_count,
   });
   const updatedData = await readObjectReview();
   res.send(updatedData).status(200);
@@ -59,6 +71,12 @@ router.put(`${BASE}/object_review/`, async (req, res) => {
     address,
     review_date,
     review_status,
+    object_name,
+    extinguishing_system,
+    build_materials,
+    build_area,
+    fire_exit_count,
+    floor_count,
   } = req.body;
   await updateObjectReview({
     object_owner,
@@ -69,6 +87,12 @@ router.put(`${BASE}/object_review/`, async (req, res) => {
     address,
     review_date,
     review_status,
+    object_name,
+    extinguishing_system,
+    build_materials,
+    build_area,
+    fire_exit_count,
+    floor_count,
   });
   const updatedData = await readObjectReview();
   res.send(updatedData).status(200);
